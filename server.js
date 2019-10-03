@@ -1,45 +1,28 @@
-// Dependencies
-var express = require("express");
-var mongojs = require("mongojs");
-// Require axios and cheerio. This makes the scraping possible
+const express = require("express");
+const path = require("path");
+const PORT = process.env.PORT || 3001;
+const app = express();
 var axios = require("axios");
 var cheerio = require("cheerio");
 
-// Initialize Express
-var app = express();
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/potato', {useNewUrlParser: true});
 
-// Database configuration
-var databaseUrl = "scraper";
-var collections = ["scrapedData"];
+var db = require("./models");
 
-// Hook mongojs configuration to the db variable
-var db = mongojs(databaseUrl, collections);
-db.on("error", function(error) {
-  console.log("Database Error:", error);
-});
 
-// Main route (simple Hello World Message)
-app.get("/", function(request, response) {
-  response.send("Hello world");
-});
 
-// Retrieve data from the db
-app.get("/all", function(request, response) {
-  console.log("Scraper start!");
-  // Find all results from the scrapedData collection in the db
-  db.scrapedData.find({}, function(error, found) {
-    // Throw any errors to the console
-    if (error) {
-      console.log(error);
-    }
-    // If there are no errors, send the data to the browser as json
-    else {
-      response.json(found);
-    }
-  });
-});
 
-// Scrape data from one site and place it into the mongodb db
+// Define middleware here
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+// Serve up static assets (usually on heroku)
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static("client/build"));
+}
+
+// Define API routes here
+
 app.get("/scrape", function(request, res) {
   // Make a request via axios for the news section of `ycombinator`
   axios.get("https://www.polygon.com/news").then(function(response) {
@@ -48,14 +31,15 @@ app.get("/scrape", function(request, res) {
     // For each element with a "c-compact-river__entry" class
     $(".c-compact-river__entry").each(function(i, element) {
       // Save the text and href of each link enclosed in the current element
-      var title = $(element).children("1-wrapper").children().children().children("c-entry-box--compact__title").children("a").text();
+      var article = $(element).children().find(".c-entry-box--compact__body");
+      var title = article.find(".c-entry-box--compact__title").text();
       console.log(title);
-      var link = $(element).children("a").attr("href");
+      var link = article.find("a").attr("href");
       console.log(link);
       // If this found element had both a title and a link
       if (title && link) {
         // Insert the data in the scrapedData db
-        db.scrapedData.insert({
+        db.Article.create({
           title: title,
           link: link
         },
@@ -78,7 +62,13 @@ app.get("/scrape", function(request, res) {
 });
 
 
-// Listen on port 3000
-app.listen(3000, function() {
-  console.log("App running on port 3000!");
+
+// Send every other request to the React app
+// Define any API routes before this runs
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "./client/public/index.html"));
+});
+
+app.listen(PORT, () => {
+  console.log(`🌎 ==> API server now on port ${PORT}!!`);
 });
