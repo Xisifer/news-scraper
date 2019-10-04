@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import "./App.css";
 import Articles from "./components/Articles/articles.js";
-import ArticleCards from "./components/ArticleCards";
+import ArticleCards from "./components/ArticleCards/articlecards.js";
 import Nav from "./components/Nav";
 import Jumbotron from "./components/Jumbotron";
 
