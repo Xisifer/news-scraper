@@ -4,7 +4,7 @@ import {
   CardTitle, Button
 } from 'reactstrap';
 
-const ArticleCards = (props) => {a
+const ArticleCards = (props) => {
   return (
     <React.Fragment>
     <div className="cardDiv">
