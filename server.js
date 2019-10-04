@@ -6,7 +6,13 @@ var axios = require("axios");
 var cheerio = require("cheerio");
 
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/potato', {useNewUrlParser: true});
+// mongoose.connect('mongodb://localhost/potato', {useNewUrlParser: true});
+
+
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/articlesDB";
+mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
+
+
 
 var db = require("./models");
 

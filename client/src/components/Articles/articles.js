@@ -6,7 +6,7 @@ import { Col, Row, Container } from "../../components/Grid";
 import { List, ListItem } from "../../components/List";
 import { Input, TextArea, FormBtn } from "../../components/Form";
 
-class Books extends Component {
+class Articles extends Component {
   // Setting our component's initial state
   state = {
     articles: [],
@@ -29,7 +29,7 @@ class Books extends Component {
       .catch(err => console.log(err));
   };
 
-  // Deletes a book from the database with a given id, then reloads articles from the db
+  // Deletes a article from the database with a given id, then reloads articles from the db
   deleteBook = id => {
     API.deleteBook(id)
       .then(res => this.loadBooks())
@@ -44,7 +44,7 @@ class Books extends Component {
     });
   };
 
-  // When the form is submitted, use the API.saveBook method to save the book data
+  // When the form is submitted, use the API.saveBook method to save the article data
   // Then reload articles from the database
   handleFormSubmit = event => {
     event.preventDefault();
@@ -100,15 +100,15 @@ class Books extends Component {
             </Jumbotron>
             {this.state.articles.length ? (
               <List>
-                {this.state.articles.map(book => {
+                {this.state.articles.map(article => {
                   return (
-                    <ListItem key={book._id}>
-                      <a href={"/articles/" + book._id}>
+                    <ListItem key={article._id}>
+                      <a href={"/articles/" + article._id}>
                         <strong>
-                          {book.title} by {book.author}
+                          {article.title} by {article.author}
                         </strong>
                       </a>
-                      <DeleteBtn onClick={() => this.deleteBook(book._id)} />
+                      <DeleteBtn onClick={() => this.deleteBook(article._id)} />
                     </ListItem>
                   );
                 })}
@@ -123,4 +123,4 @@ class Books extends Component {
   }
 }
 
-export default Books;
+export default Articles;
