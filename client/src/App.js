@@ -8,10 +8,12 @@ import Jumbotron from "./components/Jumbotron";
 class App extends Component {
   render() {
     return (
-      <Jumbotron />
-      <Nav />
-      <Articles />
-      <ArticleCards />
+      <div>
+        <Jumbotron />
+        <Nav />
+        <Articles />
+        <ArticleCards />
+      </div>
     );
   }
 }
