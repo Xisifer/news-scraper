@@ -37,7 +37,10 @@ app.get("/scrape", function(request, res) {
     // For each element with a "c-compact-river__entry" class
     $(".c-compact-river__entry").each(function(i, element) {
       // Save the text and href of each link enclosed in the current element
+      
       var article = $(element).children().find(".c-entry-box--compact__body");
+
+
       var title = article.find(".c-entry-box--compact__title").text();
       console.log(title);
       var link = article.find("a").attr("href");
@@ -65,6 +68,94 @@ app.get("/scrape", function(request, res) {
 
   // Send a "Scrape Complete" message to the browser
   res.send("Scrape Complete");
+});
+
+// Route for getting all Articles from the db
+app.get("/articles", function(req, res) {
+  // Grab every document in the Articles collection
+  db.Article.find({})
+    .then(function(dbArticle) {
+      // If we were able to successfully find Articles, send them back to the client
+      res.json(dbArticle);
+    })
+    .catch(function(err) {
+      // If an error occurred, send it to the client
+      res.json(err);
+    });
+});
+
+// Route for getting all Articles from the db
+app.post("/addComment", function(req, res) {
+  // Grab every document in the Articles collection
+  db.Comment.create({synopsis:"Hello I'm a person", articleId: "5d97d959131474157857ea84"})
+    .then(function(dbArticle) {
+      // If we were able to successfully find Articles, send them back to the client
+      res.json(dbArticle);
+    })
+    .catch(function(err) {
+      // If an error occurred, send it to the client
+      res.json(err);
+    });
+});
+
+
+
+// Update just one note by an id
+app.post("/addComment/:id", function(req, res) {
+  // When searching by an id, the id needs to be passed in
+  // as (mongojs.ObjectId(IdYouWantToFind))
+
+  // Update the note that matches the object id
+  db.comments.update(
+    {
+      _id: mongojs.ObjectId(req.params.id)
+    },
+    {
+      // Set the title, note and modified parameters
+      // sent in the req body.
+      $set: {
+        title: req.body.title,
+        note: req.body.comment,
+        modified: Date.now()
+      }
+    },
+    function(error, edited) {
+      // Log any errors from mongojs
+      if (error) {
+        console.log(error);
+        res.send(error);
+      }
+      else {
+        // Otherwise, send the mongojs response to the browser
+        // This will fire off the success function of the ajax request
+        console.log(edited);
+        res.send(edited);
+      }
+    }
+  );
+});
+
+// Delete One from the DB
+app.get("/deleteComment/:id", function(req, res) {
+  // Remove a note using the objectID
+  db.comments.remove(
+    {
+      _id: mongojs.ObjectID(req.params.id)
+    },
+    function(error, removed) {
+      // Log any errors from mongojs
+      if (error) {
+        console.log(error);
+        res.send(error);
+      }
+      else {
+        // Otherwise, send the mongojs response to the browser
+        // This will fire off the success function of the ajax request
+        console.log(removed);
+        res.send(removed);
+      }
+    }
+  );
 });
 
 
