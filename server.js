@@ -84,6 +84,14 @@ app.get("/articles", function(req, res) {
     });
 });
 
+
+app.get("/articles/:id", function(request, response) {
+  db.Article.find({_id:request.params.id})
+    .then(function(dbArticle){
+      response.json(dbArticle);
+    }) 
+});
+
 // Route for getting all Articles from the db
 app.post("/addComment", function(req, res) {
   // Grab every document in the Articles collection
